@@ -12,7 +12,7 @@
         font-family: monospace;
         font-size: 1.1em;
      }
-     .joke {
+     .message {
         margin-bottom: 10px;
      }
   </style>
@@ -23,6 +23,23 @@
 </div>
 <script src="https://www.gstatic.com/firebasejs/5.6.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/5.6.0/firebase-messaging.js"></script>
+<script src="https://sdk.pushy.me/web/1.0.2/pushy-sdk.js"></script>
 <script src="index.js"></script>
+
+<script type="text/javascript">
+	// Register device for push notifications
+	Pushy.register({ appId: '5c11000e6f4b49664308fdbe' }).then(function (deviceToken) {
+	    // Print device token to console
+	    console.log('Pushy device token: ' + deviceToken);
+
+	    // Send the token to your backend server via an HTTP GET request
+	    fetch('http://localhost:8080/device?token=' + deviceToken);
+
+	    // Succeeded, optionally do something to alert the user
+	}).catch(function (err) {
+    // Handle registration errors
+    console.error(err);
+	});
+</script>
 </body>
 </html>
