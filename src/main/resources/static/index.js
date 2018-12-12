@@ -37,19 +37,19 @@ async function init() {
 
 async function showData() {
   const db = await getDb();
-  const tx = db.transaction('jokes', 'readonly');
-  const store = tx.objectStore('jokes');
-  store.getAll().onsuccess = e => showJokes(e.target.result);
+  const tx = db.transaction('messages', 'readonly');
+  const store = tx.objectStore('messages');
+  store.getAll().onsuccess = e => showMessages(e.target.result);
 }
 
-function showJokes(jokes) {
+function showMessages(messages) {
   const table = document.getElementById('outTable');
 
-  jokes.sort((a, b) => parseInt(b.ts) - parseInt(a.ts));
+  messages.sort((a, b) => parseInt(b.ts) - parseInt(a.ts));
   const html = [];
-  jokes.forEach(j => {
+  messages.forEach(j => {
     const date = new Date(parseInt(j.ts));
-    html.push(`<div><div class="header">${date.toISOString()} ${j.id} (${j.seq})</div><div class="joke">${j.joke}</div></div>`);
+    html.push(`<div><div class="header">${date.toISOString()} ${j.id} (${j.seq})</div><div class="message">${j.msg}</div></div>`);
   });
   table.innerHTML = html.join('');
 }
@@ -59,11 +59,11 @@ async function getDb() {
     return Promise.resolve(this.db);
   }
   return new Promise(resolve => {
-    const openRequest = indexedDB.open("Chuck", 1);
+    const openRequest = indexedDB.open("DietCi2", 1);
 
     openRequest.onupgradeneeded = event => {
       const db = event.target.result;
-      db.createObjectStore('jokes', { keyPath: 'id' });
+      db.createObjectStore('messages', { keyPath: 'id' });
     };
 
     openRequest.onsuccess = event => {

@@ -9,8 +9,8 @@ const messaging = firebase.messaging();
 
 self.addEventListener('push', async event => {
 	const db = await getDb();
-	const tx = this.db.transaction('jokes', 'readwrite');
-	const store = tx.objectStore('jokes');
+	const tx = this.db.transaction('messages', 'readwrite');
+	const store = tx.objectStore('messages');
 
 	const data = event.data.json().data;
 	data.id = parseInt(data.id);
@@ -30,11 +30,11 @@ async function getDb() {
 	}
 
 	return new Promise(resolve => {
-		const openRequest = indexedDB.open("Chuck", 1);
+		const openRequest = indexedDB.open("DietCi2", 1);
 
 		openRequest.onupgradeneeded = event => {
 			const db = event.target.result;
-			db.createObjectStore('jokes', { keyPath: 'id' });
+			db.createObjectStore('messages', { keyPath: 'id' });
 		};
 
 		openRequest.onsuccess = event => {

@@ -17,44 +17,39 @@ import com.example.dietci2notificationserver.FcmClient.FcmClient;
 @EnableScheduling
 public class PushChuckJokeService {
 
-	public static final Logger logger = LoggerFactory.getLogger("PushChuckJokeService");
+	public final Logger log = LoggerFactory.getLogger(getClass());
 	private final FcmClient fcmClient;
 
-	private final WebClient webClient;
+//	private final WebClient webClient;
 
 	private int seq = 0;
 
-	public PushChuckJokeService(FcmClient fcmClient, WebClient webClient) {
+	public PushChuckJokeService(FcmClient fcmClient) {
 		this.fcmClient = fcmClient;
-		this.webClient = webClient;
+//		this.webClient = webClient;
 		
-		PushChuckJokeService.logger.info("Initializing the service");
+		log.info("Initializing the service");
 	}
 
-	@Scheduled(fixedDelay = 30_000)
+//	@Scheduled(fixedDelay = 5_000)
 	public void sendChuckQuotes() {
-		
-		PushChuckJokeService.logger.info("Sending the joke");
-		IcndbJoke joke = this.webClient.get().uri("http://api.icndb.com/jokes/random")
-				.retrieve().bodyToMono(IcndbJoke.class).block();
 		try {
-			sendPushMessage(joke);
+			sendPushMessage(new DietitianMessage());
 		}
 		catch (InterruptedException | ExecutionException e) {
-			DietCi2NotificationServerApplication.logger.error("send chuck joke", e);
+			log.error("Error pushing scheduled message", e);
 		}
-		
 		
 	}
 
-	void sendPushMessage(IcndbJoke joke) throws InterruptedException, ExecutionException {
+	void sendPushMessage(DietitianMessage msg) throws InterruptedException, ExecutionException {
 		Map<String, String> data = new HashMap<>();
-		data.put("id", String.valueOf(joke.getValue().getId()));
-		data.put("joke", joke.getValue().getJoke());
+		data.put("id", String.valueOf(msg.getDietitianId()));
+		data.put("msg", msg.getMessage());
 		data.put("seq", String.valueOf(this.seq++));
 		data.put("ts", String.valueOf(System.currentTimeMillis()));
 
-		PushChuckJokeService.logger.info("Sending chuck joke...: " + data);
+		log.info("Sending push message: " + data);
 		this.fcmClient.send(data);
 	}
 }

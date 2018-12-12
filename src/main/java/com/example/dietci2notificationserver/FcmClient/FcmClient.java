@@ -47,7 +47,7 @@ public class FcmClient {
 			throws InterruptedException, ExecutionException {
 
 		Message message = Message.builder().putAllData(data).setTopic("chuck")
-				.setWebpushConfig(WebpushConfig.builder().putHeader("ttl", "1000")
+				.setWebpushConfig(WebpushConfig.builder().putHeader("ttl", "30")
 						.setNotification(new WebpushNotification("Title of notification",
 								data.toString(), "mail.png"))
 						.build())
