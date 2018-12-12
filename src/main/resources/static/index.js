@@ -6,7 +6,8 @@ async function init() {
 	    messagingSenderId: "239109235745"
   });
   const messaging = firebase.messaging();
-  messaging.usePublicVapidKey('BHioL1lTK99SeRs-Vi6lWYfw9xlTQtkVvCPsOoyrCjWyFHpCL05aDXaAFiEdam36xJdALL5ENYN6a6c-4zaMIfw');
+  messaging.usePublicVapidKey('BLP0ZUfVCjieVtycpjejBm9GotBCgZ9c40yTufJbSlmA84IISlJ_cuo3h-h09Dd8FXNdrWA-0vpE0CujRwEn3ss');
+
   messaging.useServiceWorker(registration);	
   
   try {

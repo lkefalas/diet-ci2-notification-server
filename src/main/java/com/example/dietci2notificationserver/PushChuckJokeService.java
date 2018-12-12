@@ -28,7 +28,7 @@ public class PushChuckJokeService {
 		this.fcmClient = fcmClient;
 		this.webClient = webClient;
 		
-		PushChuckJokeService.logger.info("Initing the service?");
+		PushChuckJokeService.logger.info("Initializing the service");
 	}
 
 	@Scheduled(fixedDelay = 30_000)

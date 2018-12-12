@@ -24,6 +24,6 @@ public class RegistryController {
 	@PostMapping("/register")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public Mono<Void> register( @RequestBody Mono<String> token) {
-		return token.doOnNext(t -> this.fcmClient.subscribe("myTopic", t)).then();
+		return token.doOnNext(t -> this.fcmClient.subscribe("chuck", t)).then();
 	}
 }

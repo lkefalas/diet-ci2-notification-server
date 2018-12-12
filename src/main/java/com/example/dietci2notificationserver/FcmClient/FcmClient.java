@@ -27,7 +27,8 @@ import com.example.dietci2notificationserver.FcmSettings;
 @Service
 public class FcmClient {
 
-	public static final Logger logger = LoggerFactory.getLogger("FcmClient");
+	public final Logger log = LoggerFactory.getLogger(getClass());
+
 	public FcmClient(FcmSettings settings) {
 		Path p = Paths.get(settings.getServiceAccountFile());
 		try (InputStream serviceAccount = Files.newInputStream(p)) {
@@ -35,10 +36,10 @@ public class FcmClient {
 					.setCredentials(GoogleCredentials.fromStream(serviceAccount)).build();
 
 			FirebaseApp.initializeApp(options);
-			FcmClient.logger.info("Init fcm with options: " + options.toString() );
+			log.info("Init fcm with options: " + options.toString() );
 		}
 		catch (IOException e) {
-			FcmClient.logger.error("Error initializing fcm", e);
+			log.error("Error initializing fcm", e);
 		}
 	}
 
@@ -60,11 +61,11 @@ public class FcmClient {
 			TopicManagementResponse response = FirebaseMessaging.getInstance()
 					.subscribeToTopicAsync(Collections.singletonList(clientToken), topic).get();
 
-			FcmClient.logger.info("Tokens that were subscribed successfully: "+
+			log.info("Tokens that were subscribed successfully: "+
 					new Integer(response.getSuccessCount()).toString());
 		}
 		catch (InterruptedException | ExecutionException e) {
-			FcmClient.logger.error("subscribe", e);
+			log.error("subscribe", e);
 		}
 	}
 }
