@@ -1,64 +1,73 @@
 package com.example.dietci2notificationserver.PushyAPI;
 
+import com.example.dietci2notificationserver.PushServiceSettings;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
-import java.io.IOException;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.util.EntityUtils;
-import org.apache.http.entity.ByteArrayEntity;
-
 import java.util.Map;
 
+import org.apache.http.protocol.BasicHttpContext;
+import org.apache.http.util.EntityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.json.BasicJsonParser;
+import org.springframework.boot.json.JsonParser;
+import org.springframework.stereotype.Service;
+import org.apache.http.entity.ByteArrayEntity;
+
+@Service
 public class PushyAPI {
-    public static ObjectMapper mapper = new ObjectMapper();
-    
-    // Insert your Secret API Key here
-    public static final String SECRET_API_KEY = "5cfc9c92b6caaa0ea17856334e211d26047374428f92ad96f5ff7d06c3127c6e";
+	public static ObjectMapper mapper = new ObjectMapper();
+	public final Logger log = LoggerFactory.getLogger(getClass());
+	// Insert your Secret API Key here
+	private String SECRET_API_KEY;
+	private String pushyURL;
+	
+	public PushyAPI(PushServiceSettings settings) {
+		this.SECRET_API_KEY = settings.getSecretApiKey();
+		this.pushyURL = settings.getPushyURL();
+		log.info("Settings are " + this.SECRET_API_KEY  +" " + this.pushyURL);
+	}
 
-    public static void sendPush(PushyPushRequest req) throws Exception {
-        // Create POST request
-        HttpPost request = new HttpPost("https://api.pushy.me/push?api_key=" + SECRET_API_KEY);
+	public void sendPush(PushyPushRequest req) throws Exception {
+		// Create POST request
+		HttpPost request = new HttpPost(pushyURL + SECRET_API_KEY);
 
-        // Set content type to JSON
-        request.addHeader("Content-Type", "application/json");
+		request.addHeader("Content-Type", "application/json");
 
-        // Convert post data to JSON
-        byte[] json = mapper.writeValueAsBytes(req);
+		byte[] json = mapper.writeValueAsBytes(req);
 
-        // Send post data as byte array
-        request.setEntity(new ByteArrayEntity(json));
+		// Send post data as byte array
+		request.setEntity(new ByteArrayEntity(json));
 
-        // Execute the request
-        
-        try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+		try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+			handleResponse (client.execute(request, new BasicHttpContext()));
+		}
 
-        	HttpResponse response = client.execute(request, new BasicHttpContext());
-        	String responseJSON = EntityUtils.toString(response.getEntity());
-        	Map<String, Object> map = mapper.readValue(responseJSON, Map.class);
-        	// Got an error?
-            if (map.containsKey("error")) {
-                // Throw it
-                throw new Exception(map.get("error").toString());
-            }
+		log.info("Successfully sent push message");
+	}
 
-        } catch (IOException e) {
-			System.out.println(e);
-        }
-    }
+	private void handleResponse(HttpResponse res) throws Exception {
+		String responseJSON = EntityUtils.toString(res.getEntity());
+		JsonParser jparser = new BasicJsonParser();
+		Map<String, Object> map = jparser.parseMap(responseJSON);
+		if (map.containsKey("error")) {
+			throw new Exception(map.get("error").toString());
+		}
+	}
 
-    public static class PushyPushRequest {
-        public Object to;
-        public Object data;
+	public static class PushyPushRequest {
+		public Object to;
+		public Object data;
 
-        public Object notification;
+		public Object notification;
 
-        public PushyPushRequest(Object data, Object to, Object notification) {
-            this.to = to;
-            this.data = data;
-            this.notification = notification;
-        }
-    }
+		public PushyPushRequest(Object data, Object to, Object notification) {
+			this.to = to;
+			this.data = data;
+			this.notification = notification;
+		}
+	}
 }
