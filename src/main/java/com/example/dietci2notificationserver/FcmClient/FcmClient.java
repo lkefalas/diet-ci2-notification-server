@@ -22,14 +22,14 @@ import com.google.firebase.messaging.TopicManagementResponse;
 import com.google.firebase.messaging.WebpushConfig;
 import com.google.firebase.messaging.WebpushNotification;
 
-import com.example.dietci2notificationserver.FcmSettings;
+import com.example.dietci2notificationserver.PushServiceSettings;;
 
 @Service
 public class FcmClient {
 
 	public final Logger log = LoggerFactory.getLogger(getClass());
 
-	public FcmClient(FcmSettings settings) {
+	public FcmClient(PushServiceSettings settings) {
 		Path p = Paths.get(settings.getServiceAccountFile());
 		try (InputStream serviceAccount = Files.newInputStream(p)) {
 			FirebaseOptions options = new FirebaseOptions.Builder()

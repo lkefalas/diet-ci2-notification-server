@@ -29,12 +29,14 @@ public class RegistryController {
 
 	public final Logger log = LoggerFactory.getLogger(getClass());
 	private final FcmClient fcmClient;
+	private final PushyAPI pushyAPI;
 	
 	// Prepare list of target device tokens
 	List<String> deviceTokens = new ArrayList<String>();
 
-	public RegistryController(FcmClient fcmClient) {
+	public RegistryController(FcmClient fcmClient, PushyAPI pushyAPI) {
 		this.fcmClient = fcmClient;
+		this.pushyAPI = pushyAPI;
 	}
 
 	@PostMapping("/register")
@@ -84,12 +86,10 @@ public class RegistryController {
 
 		try {
 			// Try sending the push notification
-			PushyAPI.sendPush(push);
+			pushyAPI.sendPush(push);
 		}
 		catch (Exception exc) {
-			log.error("Sending push message failed: " + exc);
+			log.error("Sending push message failed: " + exc.getMessage());
 		}
-		
-		log.info("sdfsdfsdf");
 	}
 }
